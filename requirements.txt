@@ -1,0 +1,14 @@
+customtkinter
+opencv-python
+pillow
+numba
+ultralytics
+numpy<=1.26.4
+psutil
+onnx
+onnxruntime
+pyserial
+flatbuffers==23.5.9
+typing-extensions
+scikit-image
+gpiozero
