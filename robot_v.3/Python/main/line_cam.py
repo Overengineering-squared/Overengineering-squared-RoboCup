@@ -1,4 +1,5 @@
 import os
+import random
 from multiprocessing import shared_memory
 
 import cv2
@@ -93,7 +94,7 @@ def update_color_values():
     red_max_2_zone = np.array(config_manager.read_variable('color_values_line', 'red_max_2_zone'))
 
 
-def check_contour_size(contours, contour_color="red", size=15000):
+def check_contour_size(contours, contour_color="red", size=20000, detect_corner=False):
     if contour_color == "red":
         color = (0, 255, 0)
     elif contour_color == "green":
@@ -107,6 +108,18 @@ def check_contour_size(contours, contour_color="red", size=15000):
         if contour_size > size:
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(cv2_img, (x, y), (x + w, y + h), color, 2)
+
+            if detect_corner:
+                box = cv2.boxPoints(cv2.boundingRect(contour))
+                box = box[box[:, 0].argsort()]
+
+                if box[0][0] < camera_x * 0.02 and box[3][0] > camera_x * 0.98:
+                    line_add_angle.value = 0
+                if box[0][0] < camera_x * 0.02:
+                    line_add_angle.value = -1
+                elif box[3][0] > camera_x * 0.98:
+                    line_add_angle.value = 1
+
             return True
 
     return False
@@ -117,7 +130,7 @@ def check_green(contours_grn, black_image):
 
     for i, contour in enumerate(contours_grn):
         area = cv2.contourArea(contour)
-        if area <= 2500:
+        if 6500 >= area <= 2500:
             continue
 
         green_box = cv2.boxPoints(cv2.minAreaRect(contour))
@@ -578,6 +591,7 @@ def line_cam_loop():
     timer.set_timer("left_marker", .05)
     timer.set_timer("right_marker_up", .05)
     timer.set_timer("left_marker_up", .05)
+    timer.set_timer("remember_turn_around", .01)
 
     do_inference_counter = 10
     check_similarity_counter = 0
@@ -721,7 +735,8 @@ def line_cam_loop():
                     contours_blk = [c for c, m in zip(contours_blk, blk_mask) if m]
 
                     # Check for red line
-                    red_detected.value = check_contour_size(contours_red)
+                    line_red_corner_detected.value = check_contour_size(contours_red)
+                    line_green_corner_detected.value = check_contour_size(contours_grn)
 
                     # Check for green turn signs
                     if len(contours_grn) > 0:
@@ -741,20 +756,29 @@ def line_cam_loop():
                     elif avg_turn_dir < -.1 and rotation_y.value == "ramp_up":
                         timer.set_timer("left_marker_up", .8)
 
-                    if (not timer.get_timer("right_marker") or not timer.get_timer("right_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir >= 0 and rotation_y.value != "ramp_up" and not ignore_green.value:
+                    if not timer.get_timer("remember_turn_around") or turn_direction == "turn_around":
+                        if four_green_turn_dir.value == "not_sent_yet":
+                            four_green_turn_dir.value = random.choice(["left", "right", "straight"])
+                            print(four_green_turn_dir.value)
+
+                        turn_dir.value = four_green_turn_dir.value
+                        line_crop.value = .55
+                        if turn_direction == "turn_around":
+                            timer.set_timer("remember_turn_around", .6)
+                    elif (not timer.get_timer("right_marker") or not timer.get_timer("right_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir >= 0 and rotation_y.value != "ramp_up":
                         turn_dir.value = "right"
                         line_crop.value = .45
-                    elif (not timer.get_timer("right_marker") or not timer.get_timer("right_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir >= 0 and rotation_y.value == "ramp_up" and not ignore_green.value:
+                    elif (not timer.get_timer("right_marker") or not timer.get_timer("right_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir >= 0 and rotation_y.value == "ramp_up":
                         turn_dir.value = "right"
                         line_crop.value = .75
-                    elif (not timer.get_timer("left_marker") or not timer.get_timer("left_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir <= 0 and rotation_y.value != "ramp_up" and not ignore_green.value:
+                    elif (not timer.get_timer("left_marker") or not timer.get_timer("left_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir <= 0 and rotation_y.value != "ramp_up":
                         turn_dir.value = "left"
                         line_crop.value = .45
-                    elif (not timer.get_timer("left_marker") or not timer.get_timer("left_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir <= 0 and rotation_y.value == "ramp_up" and not ignore_green.value:
+                    elif (not timer.get_timer("left_marker") or not timer.get_timer("left_marker_up")) and not turn_direction == "turn_around" and avg_turn_dir <= 0 and rotation_y.value == "ramp_up":
                         turn_dir.value = "left"
                         line_crop.value = .75
                     else:
-                        turn_dir.value = "straight"
+                        turn_dir.value = turn_direction
                         line_crop.value = .75 if rotation_y.value == "ramp_up" or not timer.get_timer("was_ramp_up") else .55
 
                     # Determine the correct line

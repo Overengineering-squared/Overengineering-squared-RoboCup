@@ -9,6 +9,7 @@ import psutil
 from PIL import Image
 from numba import njit
 
+from bt_loop import bt_loop
 from control import control_loop
 from line_cam import line_cam_loop
 from mp_manager import *
@@ -593,7 +594,8 @@ if __name__ == "__main__":
         Process(target=serial_loop, args=()),
         Process(target=line_cam_loop, args=()),
         Process(target=zone_cam_loop, args=()),
-        Process(target=control_loop, args=())
+        Process(target=control_loop, args=()),
+        Process(target=bt_loop, args=())
         ]
 
     for process in processes:
