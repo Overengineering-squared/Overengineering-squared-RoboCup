@@ -1,4 +1,4 @@
-## About the team
+# About the team
 
 This is the repository for the German team Overengineering² (Georg-Büchner-Gymnasium, Seelze), which competed in
 the [Robocup Junior Rescue Line](https://junior.robocup.org/rcj-rescue-line/) league. The team originally was founded in
@@ -9,7 +9,7 @@ information about the team can be found in the poster and TDP (documentation).
 
 We will not participate in any more RoboCup Junior competitions as both of us will be university students in 2025.
 
-## About the project
+# About the project
 
 
 ## Why open source?
