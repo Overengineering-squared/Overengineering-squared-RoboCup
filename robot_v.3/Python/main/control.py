@@ -3,12 +3,11 @@ from math import isclose, pow
 
 from gpiozero import Button, LED, PWMLED
 
-from Managers import Timer
+from Timer import Timer
 from line_cam import camera_x, camera_y
 from mp_manager import *
 
 print_obstacle = False
-speed_zone = False
 
 # program variables
 wait_time_red = 9
@@ -17,7 +16,7 @@ max_turn_angle = 110
 
 last_turn_dir = "l"
 
-obstacle_dir = ["l", "r"]
+obstacle_dir = ["l"]  # ["l", "r"]
 obstacle_count = 0
 
 obstacle_on_ramp = True
@@ -48,6 +47,8 @@ time_line_similarity = fill_array(0, 1200)
 time_zone_similarity = fill_array(0.7, 1200)
 
 time_victim_type = empty_time_arr(1200)
+
+time_intersection_detected = empty_time_arr()
 
 timer = Timer()
 
@@ -277,9 +278,9 @@ def get_speed(angle):
 
     elif rotation_y.value == "ramp_down":
         if abs(angle) > max_turn_angle:
-            return .65 if timer.get_timer("stuck_detected") else .85
+            return .7 if timer.get_timer("stuck_detected") else .85
         elif abs(angle) > max_turn_angle / 2:
-            return .28 if timer.get_timer("stuck_detected") else .65
+            return .5 if timer.get_timer("stuck_detected") else .65
         else:
             return .15 if timer.get_timer("stuck_detected") else .3
 
@@ -288,9 +289,9 @@ def get_speed(angle):
             timer.set_timer("ramp_ahead", 2)
 
         if abs(angle) > max_turn_angle:
-            return .65
+            return .75
         elif abs(angle) > max_turn_angle / 2:
-            return .4
+            return .5
         else:
             return .3
 
@@ -541,6 +542,7 @@ def orientate_gap():
 
                 time_foreward = min_time + .3 * x_gap_perc + .1 * y_gap_perc + .3 * angle_perc
 
+
             if not (0 >= angle > -1 or angle > 179):
                 steer(0, .7)
                 time.sleep(time_foreward)
@@ -677,6 +679,7 @@ def orientate_gap():
 
 
 def turn_around():
+    intersection_counter.value += 1
     average_sensor_z = get_time_average(time_last_gyro_z, 1)
     if (-135 > average_sensor_z > -165 or 130 < average_sensor_z < 160) and turn_around_ramp_side and rotation_y.value == "none":
         steer(0, .7)
@@ -760,7 +763,7 @@ def distance_right():
 def turn_for_obstacle():
     global time_sensor_one, time_sensor_two, time_sensor_five
 
-    if rotation_y.value == "none":
+    if rotation_y.value == "j":
         sensor_one_avg = get_time_average(time_sensor_one, 0.15)
         sensor_two_avg = get_time_average(time_sensor_two, 0.15)
 
@@ -844,6 +847,38 @@ def turn_for_obstacle():
 
         else:
             return False
+
+    elif rotation_y.value == "none":
+
+        steer(200)
+        time.sleep(.4)
+        steer()
+
+        if intersection_counter.value & 1:
+            obstacle_turn_dir.value = "r"
+            # odd
+            turn_direction = 180
+            turn_to_angle(angle=round_angle(sensor_x.value, 180), tolerance=1.5, direction="l")
+            time.sleep(.2)
+            turn_to_angle(angle=round_angle(sensor_x.value, 180), tolerance=1.5, direction="l")
+
+        else:
+            obstacle_turn_dir.value = "l"
+            # even
+            turn_direction = -180
+            turn_to_angle(angle=round_angle(sensor_x.value, -180), tolerance=1.5, direction="r")
+            time.sleep(.2)
+            turn_to_angle(angle=round_angle(sensor_x.value, -180), tolerance=1.5, direction="r")
+
+        steer(turn_direction, .5)
+        time.sleep(1.3)
+        steer()
+
+        steer(0, .55)
+        time.sleep(.45)
+        steer()
+
+        return True
 
     else:
 
@@ -964,8 +999,6 @@ def avoid_seesaw():
 
 
 last_rotation = "none"
-
-
 def ramp_down_detected():
     global last_rotation
     is_ramp_down = last_rotation == "none" and rotation_y.value == "ramp_down"
@@ -1039,24 +1072,6 @@ def stop_for_red():
             steer()
 
 
-def wait_time(time_to_wait, message, rotation="n"):
-    if rotation == "u":
-        steer(0, .2)
-    elif rotation == "d":
-        steer(200, .2)
-    else:
-        steer()
-
-    for i in range(time_to_wait):
-        if not program_continue():
-            return False
-
-        status.value = f'Waiting for {message}: {time_to_wait - i} seconds left'
-        time.sleep(1)
-
-    return program_continue()
-
-
 def silver_detected():
     return get_time_average(time_silver_detected, .15 if rotation_y.value == "ramp_down" else .25) > .7 and not zone_done and timer.get_timer("silver_cooldown")
 
@@ -1086,7 +1101,7 @@ def validate_silver():
     else:
         steer()
 
-    time.sleep(.25 if speed_zone else .5)
+    time.sleep(.5)
 
     prev_line_size = black_average.value
 
@@ -1094,9 +1109,9 @@ def validate_silver():
 
     switch_lights(False)
 
-    time.sleep(1.5 if speed_zone else 1.7)
+    time.sleep(1.7)
 
-    # print(f"Prev: {prev_line_size}, Current: {black_average.value}")
+    print(f"Prev: {prev_line_size}, Current: {black_average.value}")
     if black_average.value > max(prev_line_size - 23, 0):
         status.value = f'Validating silver line failed'
         line_status.value = "line_detected"
@@ -1107,8 +1122,7 @@ def validate_silver():
         return False
     else:
         status.value = f'Validating silver line successful'
-        if not speed_zone:
-            time.sleep(.4)
+        time.sleep(.4)
         return True
 
 
@@ -1189,13 +1203,11 @@ def position_for_entry():
 
 
 turn_360_counter = 0
-
-
 def search_for_victims():
     global turn_360_counter
 
     while program_continue():
-        if turn_360(speed=.7 if speed_zone else .6, stop_when_victim=True) and turn_360_counter < 4:
+        if turn_360(stop_when_victim=True) and turn_360_counter < 4:
             turn_360_counter += 1
             break
         elif timer.get_timer("max_search_time"):
@@ -1225,7 +1237,7 @@ def search_for_corner():
     while program_continue():
         global turn_360_counter
 
-        if turn_360(speed=.85 if speed_zone else .65, stop_when_corner=True) and turn_360_counter < 4:
+        if turn_360(speed=0.65, stop_when_corner=True) and turn_360_counter < 4:
             turn_360_counter += 1
             break
         else:
@@ -1313,7 +1325,7 @@ def turn_to_corner(color, tolerance=10):
 def drive_to_victim(speed=0.6):
     timer.set_timer("drive_to_victim_stuck", 15)
     timer.set_timer("drive_to_victim", .6)
-    while ball_width.value < 140 if speed_zone else 200:
+    while ball_width.value < 200:
         status.value = f"Driving to {'alive' if ball_type.value == 'silver ball' else 'dead'} victim"
 
         update_sensor_average()
@@ -1367,20 +1379,18 @@ def drive_to_corner(color, speed=0.6):
 
 
 def pick_up_victim(alive):
-
-    servo_pos(1)
-
     steer(200, .7)
     time.sleep(.45)
     steer()
 
-    time.sleep(.6 if speed_zone else 1.5)
+    servo_pos(1)
+    time.sleep(3.3)
 
-    timer.set_timer("pickup", .5 if speed_zone else 1.15)
-    while (get_time_average(time_sensor_seven, .2) > 75 or get_time_average(time_sensor_seven, .2) == -1) and not timer.get_timer("pickup"):
+    timer.set_timer("pickup", 1.15)
+    while (get_time_average(time_sensor_seven, .2) > 75 or get_time_average(time_sensor_seven, .2) == -1) and not timer.get_timer("pickup"):  # 130
         update_sensor_average()
 
-        steer(0, .65 if speed_zone else .5)
+        steer(0, .5)
 
         if not program_continue():
             return False
@@ -1392,7 +1402,7 @@ def pick_up_victim(alive):
     time.sleep(.25)
     steer()
 
-    timer.set_timer("pickup", 1 if not speed_zone else .6)
+    timer.set_timer("pickup", 1)
     while not timer.get_timer("pickup"):
         update_sensor_average()
 
@@ -1405,50 +1415,43 @@ def pick_up_victim(alive):
 def dump_victims(alive, dumped_victims=False):
     status.value = f"Positioning in front of evacuation point"
 
-    if speed_zone:
-        reason = drive_until_wall(2, speed=.9, stop_when_near_wall=True)
+    switch_lights(True)
+    time.sleep(1.5)
 
-    else:
-        switch_lights(True)
-        time.sleep(1.5)
+    reason = drive_until_wall(2, stop_when_wall=False, stop_when_corner=True)
+    switch_lights(False)
 
-        reason = drive_until_wall(2, stop_when_wall=False, stop_when_corner=True)
-        switch_lights(False)
+    if reason != "corner":
+        return False
 
-        if reason != "corner":
-            return False
-
-    turn_to_angle(angle=add_angle(sensor_x.value, 180), direction=random.choice(["r", "l"]), tolerance=7 if speed_zone else 1.5)
+    turn_to_angle(angle=add_angle(sensor_x.value, 180), direction=random.choice(["r", "l"]))
 
     if program_continue():
         status.value = f"Dumping {'alive' if alive else 'dead'} victims"
         steer(200, 1)
-        time.sleep(.8 if speed_zone else 2.75)
+        time.sleep(2.75)
         steer()
 
         if program_continue():
             if not dumped_victims:
                 servo_pos(4)
-                time.sleep(.6)
+                time.sleep(1)
 
-                if not speed_zone:
-                    time.sleep(.9)
+                steer(0, .7)
+                time.sleep(.35)
+                steer(200, 1)
+                time.sleep(.3)
+                steer()
 
-                    steer(0, .7)
-                    time.sleep(.35)
-                    steer(200, 1)
-                    time.sleep(.3)
-                    steer()
-
-                    time.sleep(1)
-
+                time.sleep(1)
                 servo_pos(5)
 
                 if alive:
-                    drive_until_wall(.7)
+                    time.sleep(.5)
                     servo_pos(6)
+                    drive_until_wall(.7)
 
-            drive_until_wall(.15 if speed_zone else .3, speed=.9 if speed_zone else .65)
+            drive_until_wall(.3)
 
             return True
 
@@ -1459,7 +1462,7 @@ def validate_exit():
     status.value = f'Validating black line'
 
     steer()
-    time.sleep(.3 if speed_zone else 1)
+    time.sleep(1)
 
     prev_line_size = black_average.value
 
@@ -1467,12 +1470,12 @@ def validate_exit():
 
     switch_lights(False)
 
-    time.sleep(1 if speed_zone else 1.5)
+    time.sleep(1.5)
 
+    print(prev_line_size, black_average.value)
     if black_average.value > max(prev_line_size - 23, 0):
         status.value = f'Validating black line successful'
-        if not speed_zone:
-            time.sleep(.5)
+        time.sleep(.5)
         return True
 
     else:
@@ -1494,7 +1497,7 @@ def find_exit():
 
     steer(200, .65)
     time.sleep(.5)
-    turn_to_angle(round_angle(sensor_x.value, direction=90, rounding_value=90, round_45_only=True), tolerance=7 if speed_zone else 1.5)
+    turn_to_angle(round_angle(sensor_x.value, direction=90, rounding_value=90, round_45_only=True))  # 135
 
     check_exit = False
     drift_amount = 75
@@ -1503,7 +1506,7 @@ def find_exit():
     first_run = True
 
     while program_continue():
-        return_reason = drive_until_wall(10, speed=1 if speed_zone else .9, stop_when_corner=True, stop_when_black=True, stop_when_silver=True, stop_when_exit=check_exit, exit_cooldown_time=exit_cooldown_time, drift=drift_amount)
+        return_reason = drive_until_wall(10, speed=.9, stop_when_corner=True, stop_when_black=True, stop_when_silver=True, stop_when_exit=check_exit, exit_cooldown_time=exit_cooldown_time, drift=drift_amount)
 
         if return_reason in ["black", "silver"]:
             status.value = f'Detected {return_reason} line in front'
@@ -1528,16 +1531,16 @@ def find_exit():
             if first_run:
                 exit_cooldown_time = 1.6
             else:
-                exit_cooldown_time = 1.3 if not speed_zone else 1.1
+                exit_cooldown_time = 1.3
 
 
         elif return_reason == "exit":
             status.value = f'Detected exit on the right side'
 
-            turn_to_angle(round_angle(sensor_x.value, direction=90), tolerance=7 if speed_zone else 1.5)
+            turn_to_angle(round_angle(sensor_x.value, direction=90))
 
             steer(200, .65)
-            time.sleep(.6 if speed_zone else 1)
+            time.sleep(1)
 
             reason = drive_until_wall(2.5, stop_when_wall=True, stop_when_black=True, stop_when_silver=True)
 
@@ -1564,9 +1567,9 @@ def find_exit():
                 exit_cooldown_time = 1.3
 
             elif reason == "wall":
-                status.value = f'Wall detected, turning 90°'
+                status.value = f'Wall detected, turning around'
 
-                turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10), tolerance=7 if speed_zone else 1.5)
+                turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10))
 
                 check_exit = True
                 drift_amount = 35
@@ -1575,16 +1578,16 @@ def find_exit():
             elif reason == "none":
                 status.value = f'Maximum distance reached, obstacle detected'
 
-                turn_to_angle(round_angle(sensor_x.value, direction=90, final_addition=-15), tolerance=7 if speed_zone else 1.5)
+                turn_to_angle(round_angle(sensor_x.value, direction=90, final_addition=-15))
 
                 check_exit = False
                 drift_amount = 0
                 exit_cooldown_time = 0
 
         elif return_reason == "wall":
-            status.value = f'Wall detected, turning 90°'
+            status.value = f'Wall detected, turning around'
 
-            turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10), tolerance=7 if speed_zone else 1.5)
+            turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10))
 
             check_exit = True
             drift_amount = 35
@@ -1593,14 +1596,14 @@ def find_exit():
         elif return_reason == "corner":
             status.value = f'Evacuation point detected, turning 45°'
 
-            turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=30), tolerance=7 if speed_zone else 1.5)
+            turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=30))
 
             reason = drive_until_wall(5, speed=.9, stop_when_black=True, stop_when_silver=True, drift=75)
 
             if reason == "wall":
-                status.value = f'Wall detected, turning 90°'
+                status.value = f'Wall detected, turning around'
 
-                turn_to_angle(round_angle(sensor_x.value, direction=-55, final_addition=10), tolerance=7 if speed_zone else 1.5)
+                turn_to_angle(round_angle(sensor_x.value, direction=-55, final_addition=10))
 
                 check_exit = True
                 drift_amount = 35
@@ -1611,7 +1614,7 @@ def find_exit():
 
                 steer(0, .65)
                 time.sleep(.25)
-                turn_to_angle(round_angle(sensor_x.value, direction=30), tolerance=7 if speed_zone else 1.5)
+                turn_to_angle(round_angle(sensor_x.value, direction=30))
 
                 steer(200, .65)
                 time.sleep(1.4)
@@ -1641,9 +1644,9 @@ def find_exit():
                     exit_cooldown_time = 1.3
 
                 elif reason == "wall":
-                    status.value = f'Wall detected, turning 90°'
+                    status.value = f'Wall detected, turning around'
 
-                    turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10), tolerance=7 if speed_zone else 1.5)
+                    turn_to_angle(round_angle(sensor_x.value, direction=-90, final_addition=10))
 
                     check_exit = True
                     drift_amount = 35
@@ -1652,7 +1655,7 @@ def find_exit():
                 elif reason == "none":
                     status.value = f'Maximum distance reached, obstacle detected'
 
-                    turn_to_angle(round_angle(sensor_x.value, direction=90, final_addition=10), tolerance=7 if speed_zone else 1.5)
+                    turn_to_angle(round_angle(sensor_x.value, direction=90, final_addition=10))
 
                     check_exit = False
                     drift_amount = 0
@@ -1730,7 +1733,7 @@ def calibrate_turn_time():
 
 def control_loop():
     global forward_right, backward_right, forward_left, backward_left, speed_right, speed_left, light, servo_control, servo_1, servo_2, servo_3, button
-    global run, zone_done, dumped_alive_victims, dumped_dead_victims, last_turn_dir, obstacle_count, time_last_gyro_y, time_last_gyro_x, time_last_gyro_z, time_last_angles, time_sensor_one, time_sensor_two, time_sensor_three, time_sensor_four, time_sensor_five, time_sensor_six, time_sensor_seven, time_silver_detected, time_line_similarity, time_zone_similarity, time_victim_type
+    global run, zone_done, dumped_alive_victims, dumped_dead_victims, last_turn_dir, obstacle_count, time_last_gyro_y, time_last_gyro_x, time_last_gyro_z, time_last_angles, time_sensor_one, time_sensor_two, time_sensor_three, time_sensor_four, time_sensor_five, time_sensor_six, time_sensor_seven, time_silver_detected, time_line_similarity, time_zone_similarity, time_victim_type, time_intersection_detected
 
     # gpio setup
     forward_right = LED(in_1)
@@ -1755,11 +1758,6 @@ def control_loop():
 
     switch_lights(True)
 
-    servo_pos(5)
-    time.sleep(.25)
-    servo_pos(7)
-    time.sleep(.25)
-
     calibration_switched_light = False
     obstacle_is_ramp = "none"
     iteration_limit_time = time.perf_counter()
@@ -1774,6 +1772,7 @@ def control_loop():
     timer.set_timer("stuck_cooldown", 5)
     timer.set_timer("zone_stuck_cooldown", 5)
     timer.set_timer("was_ramp_up", .01)
+    timer.set_timer("intersection_cooldown", .01)
 
     while not terminate.value:
         if calibrate_color_status.value == "none":
@@ -1829,11 +1828,6 @@ def control_loop():
 
             # lop reset
             if switch.value and not run and not objective.value == "debug":
-
-                # start timer
-                if run_start_time.value == -1:
-                    run_start_time.value = time.perf_counter()
-
                 gyro_x_offset(0)
                 gyro_y_offset(0)
                 gyro_z_offset(0)
@@ -1862,6 +1856,12 @@ def control_loop():
                 timer.set_timer("stuck_cooldown", 5)
 
                 time.sleep(.25)
+
+                # start timer
+                if run_start_time.value == -1:
+                    run_start_time.value = time.perf_counter()
+
+                intersection_counter.value = 0
 
                 run = True
 
@@ -1896,9 +1896,6 @@ def control_loop():
                         if silver_detected():
                             if validate_silver():
                                 if program_continue():
-                                    if zone_start_time.value == -1:
-                                        zone_start_time.value = time.perf_counter()
-
                                     line_status.value = "position_entry"
                             else:
                                 steer(0, .7)
@@ -1921,10 +1918,21 @@ def control_loop():
 
                         steer(line_angle.value, get_speed(line_angle.value))
 
+                        if timer.get_timer("intersection_cooldown"):
+                            if intersection_detected.value:
+                                time_intersection_detected = add_time_value(time_intersection_detected, 1)
+                            else:
+                                time_intersection_detected = add_time_value(time_intersection_detected, 0)
+
+                        if get_time_average(time_intersection_detected, .32) > .45 and get_time_average(time_intersection_detected, .16) < .4:
+                            intersection_counter.value += 1
+                            time_intersection_detected = fill_array(0)
+                            timer.set_timer("intersection_cooldown", .35)
+
                         time_silver_detected = add_time_value(time_silver_detected, silver_value.value)
                         time_last_angles = add_time_value(time_last_angles, line_angle.value)
 
-                        if get_time_average(time_line_similarity, 15) > .88 and timer.get_timer("stuck_cooldown"):
+                        if get_time_average(timqqe_line_similarity, 15) > .88 and timer.get_timer("stuck_cooldown"):
                             avoid_stuck()
                             timer.set_timer("stuck_cooldown", 4 if rotation_y.value == "none" else 8)
 
@@ -1989,7 +1997,7 @@ def control_loop():
 
                             timer.set_timer("obstacke_cooldown", .45)
 
-                            obstacle_direction.value = obstacle_dir[obstacle_count % len(obstacle_dir)]
+                            obstacle_direction.value = obstacle_turn_dir.value
 
                             time_line_similarity = fill_array(0, 1200)
                             min_line_size.value = 6500
@@ -2005,7 +2013,7 @@ def control_loop():
                     elif line_status.value == "obstacle_avoid":
                         status.value = f'Avoiding obstacle'
 
-                        if obstacle_dir[obstacle_count % len(obstacle_dir)] == "l" and not timer.get_timer("obstacle_avoid"):
+                        if obstacle_turn_dir.value == "l" and not timer.get_timer("obstacle_avoid"):
                             if rotation_y.value == "none":
                                 steer(max_turn_angle, .7)
                             elif rotation_y.value == "ramp_up":
@@ -2013,7 +2021,7 @@ def control_loop():
                             elif rotation_y.value == "ramp_down":
                                 steer(max_turn_angle, .3)
 
-                        elif obstacle_dir[obstacle_count % len(obstacle_dir)] == "l" and timer.get_timer("obstacle_avoid") and not rotation_y.value == "ramp_up":
+                        elif obstacle_turn_dir.value == "l" and timer.get_timer("obstacle_avoid") and not rotation_y.value == "ramp_up":
                             steer(180, .6)
                             time.sleep(.1)
                             if rotation_y.value == "none":
@@ -2023,7 +2031,7 @@ def control_loop():
                             elif rotation_y.value == "ramp_down":
                                 timer.set_timer("obstacle_avoid", .75)
 
-                        elif obstacle_dir[obstacle_count % len(obstacle_dir)] == "r" and not timer.get_timer("obstacle_avoid"):
+                        elif obstacle_turn_dir.value == "r" and not timer.get_timer("obstacle_avoid"):
                             if rotation_y.value == "none":
                                 steer(-max_turn_angle, .7)
                             elif rotation_y.value == "ramp_up":
@@ -2031,7 +2039,7 @@ def control_loop():
                             elif rotation_y.value == "ramp_down":
                                 steer(-max_turn_angle, .3)
 
-                        elif obstacle_dir[obstacle_count % len(obstacle_dir)] == "r" and timer.get_timer("obstacle_avoid") and not rotation_y.value == "ramp_up":
+                        elif obstacle_turn_dir.value == "r" and timer.get_timer("obstacle_avoid") and not rotation_y.value == "ramp_up":
                             steer(-180, .6)
                             time.sleep(.1)
                             if rotation_y.value == "none":
@@ -2042,7 +2050,7 @@ def control_loop():
                                 timer.set_timer("obstacle_avoid", .75)
 
                         if get_time_average(time_line_similarity, 15) > .88 and timer.get_timer("stuck_cooldown"):
-                            steer(180 if obstacle_dir[obstacle_count % len(obstacle_dir)] == "r" else -180, .7)
+                            steer(180 if obstacle_turn_dir.value == "r" else -180, .7)
                             time.sleep(.4)
                             steer()
                             time.sleep(.2)
@@ -2053,7 +2061,7 @@ def control_loop():
                             line_status.value = "obstacle_orientate"
 
                             if obstacle_is_ramp == "none":
-                                orientate_after_obstacle(obstacle_dir[obstacle_count % len(obstacle_dir)])
+                                orientate_after_obstacle(obstacle_turn_dir.value)
 
                                 if line_detected.value:
                                     steer(200, .7)
@@ -2062,7 +2070,7 @@ def control_loop():
                             else:
                                 steer(0, .3 if obstacle_is_ramp == "ramp_down" else .8)
                                 time.sleep(.6 if obstacle_is_ramp == "ramp_down" else 1)
-                                steer(180 if obstacle_dir[obstacle_count % len(obstacle_dir)] == "r" else -180, .7)
+                                steer(180 if obstacle_turn_dir.value == "r" else -180, .7)
                                 time.sleep(.3)
 
                             time_sensor_one = fill_array(300)
@@ -2077,8 +2085,7 @@ def control_loop():
 
                     elif line_status.value == "position_entry":
                         status.value = f'Positioning for entry'
-                        if not speed_zone:
-                            time.sleep(.5)
+                        time.sleep(.5)
                         if rotation_y.value == "none":
                             if position_for_entry():
                                 line_status.value = "line_detected"
@@ -2091,47 +2098,50 @@ def control_loop():
                 elif objective.value == "zone":
 
                     if zone_status.value == "begin":
-                        if not wait_time(2 if speed_zone else 4, "AI model to load", rotation="u" if rotation_y.value == "ramp_up" else "n"):
-                            continue
+                        status.value = f'Waiting for AI model to load'
+
+                        if rotation_y.value == "ramp_up":
+                            steer(0, .2)
+                        else:
+                            steer()
+                        time.sleep(3.5)
 
                         status.value = f'Driving into zone'
+
+                        if zone_start_time.value == -1:
+                            zone_start_time.value = time.perf_counter()
 
                         if rotation_y.value == "none":
                             gyro_x_offset(0)
                             gyro_y_offset(0)
 
-                        if not speed_zone:
-                            drive_until_wall(2.4 if rotation_y.value == "ramp_up" else .7)
+                        drive_until_wall(2.4 if rotation_y.value == "ramp_up" else .7)
 
-                            avoid_angle = -361
-                            if distance_left() < 200 or distance_right() < 200 and not (distance_left() < 200 and distance_right() < 200):
-                                if distance_left() > distance_right():
-                                    avoid_angle = add_angle(sensor_x.value, -90)
-                                else:
-                                    avoid_angle = add_angle(sensor_x.value, 90)
+                        avoid_angle = -361
+                        if distance_left() < 200 or distance_right() < 200:
+                            if distance_left() > distance_right():
+                                avoid_angle = add_angle(sensor_x.value, -90)
+                            else:
+                                avoid_angle = add_angle(sensor_x.value, 90)
 
-                            drive_until_wall(1.3)
+                        drive_until_wall(1.3)
 
-                            if distance_left() < 200 or distance_right() < 200 and not (distance_left() < 200 and distance_right() < 200):
-                                if distance_left() > distance_right():
-                                    avoid_angle = add_angle(sensor_x.value, -90)
-                                else:
-                                    avoid_angle = add_angle(sensor_x.value, 90)
+                        if distance_left() < 200 or distance_right() < 200:
+                            if distance_left() > distance_right():
+                                avoid_angle = add_angle(sensor_x.value, -90)
+                            else:
+                                avoid_angle = add_angle(sensor_x.value, 90)
 
-                            if avoid_angle != -361:
-                                turn_to_angle(avoid_angle, tolerance=5)
+                        if avoid_angle != -361:
+                            turn_to_angle(avoid_angle, tolerance=5)
 
-                                reason, time_driven = drive_until_wall(1, stop_when_black=True, stop_when_silver=True, stop_when_victim=True, return_driven_time=True, speed=.9)
+                            reason, time_driven = drive_until_wall(1.8, stop_when_black=True, stop_when_silver=True, return_driven_time=True)
 
-                                if reason in ["black", "silver"]:
-                                    steer(200, .7)
-                                    time.sleep(.3)
-                                    turn_to_angle(add_angle(sensor_x.value, 180), tolerance=5, direction="r")
-
-                                    drive_until_wall(time_driven + 1.8, stop_when_black=True, stop_when_silver=True)
-
-                        else:
-                            drive_until_wall(2 if rotation_y.value == "ramp_up" else 1, speed=1)
+                            if reason in ["black", "silver"]:
+                                steer(200, .7)
+                                time.sleep(.3)
+                                turn_to_angle(add_angle(sensor_x.value, 180), tolerance=5, direction="r")
+                                drive_until_wall(time_driven + 1.8, stop_when_black=True, stop_when_silver=True)
 
                         timer.set_timer("max_search_time", 240)
                         time_zone_similarity = fill_array(0.7, 1200)
@@ -2160,7 +2170,7 @@ def control_loop():
                         time_victim_type = empty_time_arr(1200)
 
                         if turn_to_victim():
-                            if drive_to_victim(speed=1 if speed_zone else .6):
+                            if drive_to_victim():
                                 victim_type = "silver ball" if get_time_average(time_victim_type, 10) > 0.5 else "black ball"
                                 status.value = f"Picking up {'alive' if victim_type == 'silver ball' else 'dead'} victim"
 
@@ -2177,12 +2187,10 @@ def control_loop():
                                         picked_up_dead_count.value += 1
 
                                     status.value = f"Picked up {'alive' if alive else 'dead'} victim, new total: {picked_up_alive_count.value + picked_up_dead_count.value} victims"
-                                    if not speed_zone:
-                                        time.sleep(1)
+                                    time.sleep(1)
                                 else:
                                     status.value = f"Failed to pick up {'alive' if alive else 'dead'} victim"
-                                    if not speed_zone:
-                                        time.sleep(1)
+                                    time.sleep(1)
 
                                 if picked_up_alive_count.value + picked_up_dead_count.value == 3:
                                     zone_status.value = "deposit_green"
@@ -2199,15 +2207,13 @@ def control_loop():
                             search_for_corner()
 
                             if turn_to_corner("green"):
-                                if drive_to_corner("green", speed=.75 if speed_zone else .6):
+                                if drive_to_corner("green"):
                                     if dump_victims(True):
-
-                                        if speed_zone:
+                                        status.value = f'Waiting for confirmation of successful dump'
+                                        steer()
+                                        time.sleep(6)
+                                        if program_continue():
                                             dumped_alive_victims = True
-                                        else:
-                                            if wait_time(6, "confirmation of successful dump", rotation="n"):
-                                                dumped_alive_victims = True
-
                                         time_zone_similarity = fill_array(0.7, 1200)
                                         zone_status.value = "deposit_red"
                         else:
@@ -2221,14 +2227,14 @@ def control_loop():
                         search_for_corner()
 
                         if turn_to_corner("red"):
-                            if drive_to_corner("red", speed=.75 if speed_zone else .6):
+                            if drive_to_corner("red"):
                                 if dump_victims(False, dumped_dead_victims):
                                     if not dumped_dead_victims:
-                                        if speed_zone:
+                                        status.value = f'Waiting for confirmation of successful dump'
+                                        steer()
+                                        time.sleep(6)
+                                        if program_continue():
                                             dumped_dead_victims = True
-                                        else:
-                                            if wait_time(6, "confirmation of successful dump", rotation="n"):
-                                                dumped_dead_victims = True
                                     time_zone_similarity = fill_array(0.7, 1200)
                                     zone_status.value = "exit"
 
@@ -2238,51 +2244,41 @@ def control_loop():
 
                         if orientate_at_corner:
                             gyro_x_offset(45)
-
                         switch_lights(True)
 
                         if find_exit():
                             status.value = f'Found zone exit'
-                            if not speed_zone:
-                                time.sleep(1)
+                            time.sleep(1)
 
-                                zone_status.value = "get_exit_angle"
-                                position_exit()
+                            zone_status.value = "get_exit_angle"
 
-                            else:
-                                switch_lights(True)
+                            position_exit()
 
                             zone_status.value = "exit"
 
-                            if not speed_zone:
-                                if not wait_time(6, "confirmation of exit position", rotation="n"):
-                                    continue
+                            status.value = f'Waiting for confirmation of exit position'
+                            time.sleep(6)
 
-                            timer.set_timer("obstacle_detect_cooldown", 3)
+                            if program_continue():
+                                timer.set_timer("obstacle_detect_cooldown", 3)
 
-                            objective.value = "follow_line"
-                            line_status.value = "line_detected"
-                            zone_status.value = "begin"
+                                objective.value = "follow_line"
+                                line_status.value = "line_detected"
+                                zone_status.value = "begin"
 
-                            zone_done = True
-                            time_line_similarity = fill_array(0, 1200)
+                                zone_start_time.value = -1
+                                zone_done = True
 
-                            if speed_zone:
-                                steer(0, .6)
-
-                            time.sleep(.7)
-                            steer()
-                            time.sleep(1)
-
-                            zone_start_time.value = -1
-
-                            continue
+                                time_line_similarity = fill_array(0, 1200)
+                                time.sleep(.5)
 
 
                 elif objective.value == "debug":
                     status.value = f'Debugging'
 
-                    time.sleep(1)
+                    print(pick_up_victim(True))
+                    steer()
+                    time.sleep(5)
 
 
         elif calibrate_color_status.value == "calibrate":
@@ -2303,8 +2299,4 @@ def control_loop():
             iteration_time = time.perf_counter()
             counter = 0
 
-    servo_pos(5)
-    time.sleep(.25)
-    servo_pos(7)
-    time.sleep(.25)
     servo_pos(3)

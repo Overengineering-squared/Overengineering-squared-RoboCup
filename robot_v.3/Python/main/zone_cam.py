@@ -7,7 +7,7 @@ from skimage.metrics import structural_similarity
 from ultralytics import YOLO
 from ultralytics.utils.plotting import colors
 
-from Managers import Timer
+from Timer import Timer
 from mp_manager import *
 
 camera_width = 640
@@ -97,7 +97,8 @@ def get_red_contours(image):
 
 
 def zone_cam_loop():
-    model = YOLO('../../Ai/models/ball_zone_s/ball_detect_s_edgetpu.tflite', task='detect')
+    model = YOLO('../../Ai/models/ball_zone_s/ball_detect_s_edgetpu.tflite', task='detect')  # old model
+    # model = YOLO('../../Ai/models/test/ball_zone_s/ball_detect_s_edgetpu.tflite', task='detect')
 
     crop_percentage = 0.45
     crop_height = int(camera_height * crop_percentage)
@@ -151,7 +152,7 @@ def zone_cam_loop():
                     if zone_status.value == "begin" or zone_status.value == "find_balls" or zone_status.value == "pickup_ball":
                         results = model.predict(cv2_img, imgsz=(512, 224), conf=0.3, iou=0.2, agnostic_nms=True, workers=4, verbose=False)  # verbose=True to enable debug info
 
-                        result = results[0].numpy()
+                        result = results[0].numpy()  # if this crashes, try results[0].cpu().numpy() instead
 
                         boxes = []
                         for box in result.boxes:

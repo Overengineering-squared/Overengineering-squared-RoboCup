@@ -3,12 +3,11 @@ from multiprocessing import shared_memory
 
 import cv2
 from libcamera import controls
-from numba import njit
 from picamera2 import Picamera2
 from skimage.metrics import structural_similarity
 from ultralytics import YOLO
 
-from Managers import Timer
+from Timer import Timer
 from mp_manager import *
 
 debug_mode = False
@@ -138,7 +137,7 @@ def check_green(contours_grn, black_image):
         return "straight"
 
 
-@njit(cache=True)
+# @njit(cache=True)
 def check_black(black_around_sign, i, green_box, black_image):
     green_box = green_box[green_box[:, 1].argsort()]
 
@@ -240,7 +239,7 @@ def determine_correct_line(contours_blk):
     return blackline, blackline_crop
 
 
-@njit(cache=True)
+# @njit(cache=True)
 def calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_line_point):
     max_gap = 1
     max_line_width = camera_x * .19
@@ -258,6 +257,7 @@ def calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_
 
     top_mean = (int(np.mean(blackline_top)), blackline_y_min)
 
+    top_line_size = -1
     if np.sum(blackline_gap_mask) == 1:
         gap_index = np.where(blackline_gap_mask)[0][0]
 
@@ -266,6 +266,12 @@ def calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_
             top_mean_r = int(np.mean(blackline_top[gap_index:]))
 
             top_mean = (top_mean_l, blackline_y_min) if np.abs(top_mean_l - average_line_point) < np.abs(top_mean_r - average_line_point) else (top_mean_r, blackline_y_min)
+            top_line_size = np.abs(blackline_top[:gap_index][0] - blackline_top[:gap_index][-1]) if np.abs(top_mean_l - average_line_point) < np.abs(top_mean_r - average_line_point) else np.abs(blackline_top[gap_index:][0] - blackline_top[gap_index:][-1])
+            # print(top_line_size)
+
+    if top_line_size == -1:
+        top_line_size = np.abs(blackline_top[0] - blackline_top[-1])
+        # print(np.abs(blackline_top[0] - blackline_top[-1]))
 
     poi_no_crop[0] = [top_mean[0], top_mean[1]]
 
@@ -337,13 +343,16 @@ def calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_
         right_mean = (blackline_x_max, int(np.mean(blackline_right[:, :, 1])))
         poi[2] = [right_mean[0], right_mean[1]]
 
-    return poi, poi_no_crop, is_crop, max_black_top, bottom_point
+    return poi, poi_no_crop, is_crop, max_black_top, bottom_point, top_line_size
+
+
+counter_sec = 0
 
 
 def calculate_angle(blackline, blackline_crop, average_line_angle, turn_direction, last_bottom_point, average_line_point, entry):
-    global multiple_bottom_side
+    global multiple_bottom_side, counter_sec
 
-    poi, poi_no_crop, is_crop, max_black_top, bottom_point = calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_line_point)
+    poi, poi_no_crop, is_crop, max_black_top, bottom_point, top_line_size = calculate_angle_numba(blackline, blackline_crop, last_bottom_point, average_line_point)
 
     black_top = poi_no_crop[0][1] < camera_y * .1
 
@@ -351,6 +360,13 @@ def calculate_angle(blackline, blackline_crop, average_line_angle, turn_directio
 
     black_l_high = poi_no_crop[1][1] < camera_y * .5
     black_r_high = poi_no_crop[2][1] < camera_y * .5
+
+    if 45 < top_line_size < camera_x * .25 and black_top and (poi_no_crop[1][0] < camera_x * 0.02 or poi_no_crop[2][0] > camera_x * 0.98):
+        # print("intersection ", counter_sec)
+        intersection_detected.value = True
+        counter_sec += 1
+    else:
+        intersection_detected.value = False
 
     if entry:
         final_poi = poi_no_crop[0]
@@ -527,7 +543,8 @@ def calc_silver_angle(silver_image):
 def line_cam_loop():
     global cv2_img, x_last, y_last, time_line_angle
 
-    model = YOLO('../../Ai/models/silver_zone_entry/silver_classify_s.onnx', task='classify')
+    # model = YOLO('../../Ai/models/silver_zone_entry/silver_classify_s.onnx', task='classify')  # old model
+    model = YOLO('../../Ai/models/test/silver_zone_entry_2/silver_classify_s.onnx', task='classify')
 
     x_last = camera_x / 2
     y_last = camera_y / 2
@@ -691,8 +708,8 @@ def line_cam_loop():
                         black_image = cv2.dilate(black_image, kernal, iterations=8)
                     else:
                         black_image = cv2.erode(black_image, kernal, iterations=5)
-                        black_image = cv2.dilate(black_image, kernal, iterations=17) # Previous values: 12 | 16
-                        black_image = cv2.erode(black_image, kernal, iterations=9)  # Previous values: 4 | 8
+                        black_image = cv2.dilate(black_image, kernal, iterations=17)  # 12 16
+                        black_image = cv2.erode(black_image, kernal, iterations=9)  # 4 8
 
                     green_image = cv2.erode(green_image, kernal, iterations=1)
                     green_image = cv2.dilate(green_image, kernal, iterations=11)
@@ -755,7 +772,7 @@ def line_cam_loop():
                         line_crop.value = .75
                     else:
                         turn_dir.value = turn_direction
-                        line_crop.value = .75 if rotation_y.value == "ramp_up" or not timer.get_timer("was_ramp_up") else .48
+                        line_crop.value = .75 if rotation_y.value == "ramp_up" or not timer.get_timer("was_ramp_up") else .55
 
                     # Determine the correct line
                     if len(contours_blk) > 0:

@@ -228,6 +228,11 @@ class App(ctk.CTk):
         self.color_choose_button = ctk.CTkButton(master=self.zoneFrame, corner_radius=5, command=self.choose_color, textvariable=self.color_choose_button_var, text_color="white", font=("Arial", data_font_size), width=40, height=30, fg_color=button_color, hover_color="black")
         self.color_choose_button.grid(column=2, row=0, sticky="ne", padx=8, pady=44)
 
+        # =================== Intersection counter =================== #
+        self.intersection_count_var = tkinter.StringVar(value="0")
+        self.intersection_count = ctk.CTkButton(master=self.zoneFrame, corner_radius=5, textvariable=self.intersection_count_var, text_color="white", font=("Arial", data_font_size), width=40, height=30, fg_color=button_color, hover_color="black")
+        self.intersection_count.grid(column=2, row=0, sticky="ne", padx=8, pady=80)
+
         # =================== Bar =================== #
         self.barFrame = ctk.CTkFrame(master=self.mainFrame)
         self.barFrame.grid_propagate(0)
@@ -337,17 +342,14 @@ class App(ctk.CTk):
             process.terminate()
             time.sleep(.5)
 
-    @staticmethod
-    def capture_image():
+    def capture_image(self):
         capture_image.value = True
 
     def exit_calibrate_color(self):
         calibrate_color_status.value = "none"
-        self.color_calibration_button_var.set("✎")
         self.set_calibration_status()
 
-    @staticmethod
-    def set_calibration_status():
+    def set_calibration_status(self):
         if calibrate_color_status.value == "calibrate":
             calibration_type = ["none", "none", "none"]
 
@@ -565,6 +567,8 @@ class App(ctk.CTk):
             create_circle(65, 15, 10, self.canvas, 1)
         elif picked_up_dead_count.value == 1:
             create_circle(65, 15, 10, self.canvas, 3)
+
+        self.intersection_count_var.set(str(intersection_counter.value))
 
         cam_1_stream = shared_memory.SharedMemory(name="shm_cam_1")
         bgr_img_arr_cam_1 = np.ndarray((252, 448, 3), dtype=np.uint8, buffer=cam_1_stream.buf)
