@@ -35,6 +35,11 @@ YouTube, open sourcing your code or as simple as chatting with other teams at co
 - [YouTube](https://www.youtube.com/@Overengineering2)
 - [Coral TPU Cooler](https://makerworld.com/en/models/233023) by us
 
+## Contributors
+
+- https://github.com/Tim4022
+- https://github.com/Skillnoob
+
 ##
 
 **We will answer questions whenever we can, but please don't expect active support for this repository**
