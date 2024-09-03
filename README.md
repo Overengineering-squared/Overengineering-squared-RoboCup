@@ -7,6 +7,9 @@
   <a href="https://github.com/Skillnoob">
     <img src="https://img.shields.io/badge/Contributor-Skillnoob-blue" alt="Skillnoob">
   </a>
+  <a href="https://www.youtube.com/@Overengineering2">
+    <img src="https://img.shields.io/badge/YouTube-Overengineering2-red?logo=youtube" alt="Overengineering2 YouTube Channel">
+  </a>
 </p>
 
 <br/>
