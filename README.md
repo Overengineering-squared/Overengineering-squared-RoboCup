@@ -57,7 +57,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 - [KY-019 Relay](https://sensorkit.joy-it.net/en/sensors/ky-019)
 - 5x [Emax ES09MD Servo](https://www.premium-modellbau.de/emax-es09md-digital-metallgetriebe-mini-servo-15g-0-08s-2-6kg-kugellager-es08md)
 - [Diymore 35KG Servo](https://www.amazon.de/-/en/diymore-Waterproof-Helicopter-Aeroplane-Suitable/dp/B0BD3XKQSW)
-- 4x 12V DC Geared Motor (We don't know the model, our mentor got these in 2017 from a soccer leauge team, picture is in the poster)
+- 4x 12V DC Geared Motor (We don't know the model, our mentor got these in 2017 from a soccer leauge team, picture is in the [poster](documents/documentation/Poster.pdf))
 - [L298N Motor Driver](https://projecthub.arduino.cc/lakshyajhalani56/l298n-motor-driver-arduino-motors-motor-driver-l298n-7e1b3b) (Can be controlled by the 3.3V of a RPI btw)
 - [Conrad 7.4V 3800mAh LiPo](https://www.conrad.com/en/p/conrad-energy-scale-model-battery-pack-lipo-7-4-v-3800-mah-no-of-cells-2-20-c-softcase-xt60-1344142.html)
 - [Conrad 11.1V 3800mAh LiPo](https://www.conrad.de/de/p/conrad-energy-modellbau-akkupack-lipo-11-1-v-3800-mah-zellen-zahl-3-20-c-softcase-xt60-1344139.html)
@@ -123,10 +123,10 @@ We will not participate in any RoboCup Junior competitions in the future, as we 
 - 22nd @ German Open Kassel 2022
 - 2nd @ Qualifying Tournament Hanover 2023
 - 2nd @ German Open Kassel 2023
-- 3rd @ European Championship Varaždin 2023
+- **3rd @ European Championship Varaždin 2023**
 - 1st @ Qualifying Tournament Hanover 2024
 - 1st @ German Open Kassel 2024
-- 1st @ World Championship Eindhoven 2024
+- **1st @ World Championship Eindhoven 2024**
 
 # Contributors
 
@@ -137,6 +137,11 @@ We will not participate in any RoboCup Junior competitions in the future, as we 
 
 - [YouTube](https://www.youtube.com/@Overengineering2)
 - [Coral TPU Cooler](https://makerworld.com/en/models/233023) by us
+
+# License
+This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details. \
+Additionally, you can read up one the license [here](https://choosealicense.com/licenses/gpl-3.0/). \
+Projects that use this code must also be open source and use the same license.
 
 ##
 
