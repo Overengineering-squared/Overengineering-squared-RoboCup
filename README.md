@@ -1,9 +1,7 @@
 <img src="https://github.com/user-attachments/assets/d29a00c3-4102-41a2-afe6-8e1174fef7b9" style="width:100%;"/>
 
-<p align="center">
 [![Tim4022](https://img.shields.io/badge/Contributor-Tim4022-blue)](https://github.com/Tim4022)
 [![Skillnoob](https://img.shields.io/badge/Contributor-Skillnoob-blue)](https://github.com/Skillnoob)
-</p>
 
 <br/>
 <br/>
