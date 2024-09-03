@@ -1,7 +1,13 @@
 <img src="https://github.com/user-attachments/assets/d29a00c3-4102-41a2-afe6-8e1174fef7b9" style="width:100%;"/>
 
-[![Tim4022](https://img.shields.io/badge/Contributor-Tim4022-blue)](https://github.com/Tim4022)
-[![Skillnoob](https://img.shields.io/badge/Contributor-Skillnoob-blue)](https://github.com/Skillnoob)
+<p align="center">
+  <a href="https://github.com/Tim4022">
+    <img src="https://img.shields.io/badge/Contributor-Tim4022-blue" alt="Tim4022">
+  </a>
+  <a href="https://github.com/Skillnoob">
+    <img src="https://img.shields.io/badge/Contributor-Skillnoob-blue" alt="Skillnoob">
+  </a>
+</p>
 
 <br/>
 <br/>
