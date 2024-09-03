@@ -37,21 +37,35 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
   In order to accomplish all of the tasks mentioned above, we decided to take a completely camera-based approach using Raspberry Pi. The development of this design started in March of 2022 and has been iterated until now (2024).
 </p>
 
-<p align="justify">
+<p align="center">
   With this latest iteration of the robot design, we achieved 1st place (Individual Team) at the RoboCup Junior World Championship 2024 in Eindhoven.
 </p>
 
-## Parts
+## Components
 
 <p align="justify">
   Aside from the custom, 3D-printed robot chassis and customized wheels to fit our mounting hubs, we used mostly off-the-shelf components for their reliability and active support. Our latest iteration used the following parts:
 </p>
 
-- 
-- 
-- 
--
-- 
+- [Raspberry Pi 5 8GB](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- [Coral USB Accelerator](https://coral.ai/products/accelerator)
+- 2x [Arduino Nano](https://store.arduino.cc/en-de/products/arduino-nano)
+- 2x [Adafruit BNO055 Gyroscope](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/overview)
+- 6x [Pololu irs17a Infrared Sensor](https://www.pololu.com/product/4071)
+- [Pololu irsl16a Infrared Sensor](https://www.pololu.com/product/4067)
+- [1 m revoART 12 V COB LED-Strip](https://www.leds24.com/12v-cob-led-streifen-neutralweiss-alle-1-cm-teilbar-3mm-breit-)
+- [KY-019 Relay](https://sensorkit.joy-it.net/en/sensors/ky-019)
+- 5x [Emax ES09MD Servo](https://www.premium-modellbau.de/emax-es09md-digital-metallgetriebe-mini-servo-15g-0-08s-2-6kg-kugellager-es08md)
+- [Diymore 35KG Servo](https://www.amazon.de/-/en/diymore-Waterproof-Helicopter-Aeroplane-Suitable/dp/B0BD3XKQSW)
+- 4x 12V DC Geared Motor (We don't know the model, our mentor got these in 2017 from a soccer leauge team, picture is in the poster)
+- [L298N Motor Driver](https://projecthub.arduino.cc/lakshyajhalani56/l298n-motor-driver-arduino-motors-motor-driver-l298n-7e1b3b) (Can be controlled by the 3.3V of a RPI btw)
+- [Conrad 7.4V 3800mAh LiPo](https://www.conrad.com/en/p/conrad-energy-scale-model-battery-pack-lipo-7-4-v-3800-mah-no-of-cells-2-20-c-softcase-xt60-1344142.html)
+- [Conrad 11.1V 3800mAh LiPo](https://www.conrad.de/de/p/conrad-energy-modellbau-akkupack-lipo-11-1-v-3800-mah-zellen-zahl-3-20-c-softcase-xt60-1344139.html)
+- [XL4015 Step Down Converter](https://www.amazon.de/-/en/XL4015DC-Converter-DC5V-32V-Charging-Constant/dp/B0CC96CN3Q)
+- [XL6009 Step Up Converter](https://www.amazon.de/-/en/A0040X5-5-Items/dp/B00HV59922)
+- [XL4016E1 Step Down Converter](https://www.az-delivery.de/en/products/xl4016e-yh11060d)
+- [Arducam B0268 Wide Angle Camera](https://www.arducam.com/product/arducam-16mp-wide-angle-usb-camera-for-laptop-1-2-8-cmos-imx298-mini-uvc-b0268/)
+- [Raspberry Pi Camera Module 3 Wide](https://www.berrybase.de/en/raspberry-pi-camera-module-3-wide-12mp)
 
 ## Software
 <p align="justify">
