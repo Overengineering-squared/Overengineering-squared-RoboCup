@@ -1,5 +1,10 @@
 <img src="https://github.com/user-attachments/assets/d29a00c3-4102-41a2-afe6-8e1174fef7b9" style="width:100%;"/>
 
+<p align="center">
+[![Tim4022](https://img.shields.io/badge/Contributor-Tim4022-blue)](https://github.com/Tim4022)
+[![Skillnoob](https://img.shields.io/badge/Contributor-Skillnoob-blue)](https://github.com/Skillnoob)
+</p>
+
 <br/>
 <br/>
 
@@ -127,11 +132,6 @@ We will not participate in any RoboCup Junior competitions in the future, as we 
 - 1st @ Qualifying Tournament Hanover 2024
 - 1st @ German Open Kassel 2024
 - **1st @ World Championship Eindhoven 2024**
-
-# Contributors
-
-- https://github.com/Tim4022
-- https://github.com/Skillnoob
 
 # Links
 
