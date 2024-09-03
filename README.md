@@ -4,9 +4,11 @@
   <a href="https://github.com/Tim4022">
     <img src="https://img.shields.io/badge/Contributor-Tim4022-blue" alt="Tim4022">
   </a>
+  
   <a href="https://github.com/Skillnoob">
     <img src="https://img.shields.io/badge/Contributor-Skillnoob-blue" alt="Skillnoob">
   </a>
+  
   <a href="https://www.youtube.com/@Overengineering2">
     <img src="https://img.shields.io/badge/YouTube-Overengineering2-red?logo=youtube" alt="Overengineering2 YouTube Channel">
   </a>
@@ -45,12 +47,18 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 <img src="https://github.com/user-attachments/assets/8b459bc5-5a42-4c4e-816b-697093f9b683" align="right" style="width:26%;"/>
 <img src="https://github.com/user-attachments/assets/a7cf6d5c-9d79-4b35-9c4a-98a944fc0e93" align="left" style="width:25%;"/>
 
-<p align="justify">
+<p align="center">
   In order to achieve all the tasks mentioned above, we decided to take a completely camera-based approach using Raspberry Pi. The development of this design started in March 2022 and has been iterated until now (2024).
 </p>
 
 <p align="center">
   With this latest iteration of the robot design, we achieved first place (Individual Team) at the RoboCup Junior World Championship 2024 in Eindhoven.
+</p>
+
+<br/>
+
+<p align="justify">
+  As required by the competition <a href="https://junior.robocup.org/wp-content/uploads/2024/04/RCJRescueLine2024-final-1.pdf">rules</a>, in addition to this GitHub, we created detailed documentation in the form of an <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">Team Description Paper</a>, and a <a href="documents/documentation/Poster.pdf">Poster</a> (all three of which earned us the highest possible score at the 2024 World Championship in Eindhoven).
 </p>
 
 ## Components
@@ -59,31 +67,32 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
   Aside from the custom, 3D-printed robot chassis and customized wheels to fit our mounting hubs, we used mostly off-the-shelf components for their reliability and active support. Our latest iteration used the following parts:
 </p>
 
-- [Raspberry Pi 5 8GB](https://www.raspberrypi.com/products/raspberry-pi-5/)
-- [Coral USB Accelerator](https://coral.ai/products/accelerator)
+- 1x [Raspberry Pi 5 8GB](https://www.raspberrypi.com/products/raspberry-pi-5/)
+- 1x [Coral USB Accelerator](https://coral.ai/products/accelerator)
 - 2x [Arduino Nano](https://store.arduino.cc/en-de/products/arduino-nano)
 - 2x [Adafruit BNO055 Gyroscope](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/overview)
 - 6x [Pololu irs17a Infrared Sensor](https://www.pololu.com/product/4071)
-- [Pololu irsl16a Infrared Sensor](https://www.pololu.com/product/4067)
-- [1 m revoART 12 V COB LED-Strip](https://www.leds24.com/12v-cob-led-streifen-neutralweiss-alle-1-cm-teilbar-3mm-breit-)
-- [KY-019 Relay](https://sensorkit.joy-it.net/en/sensors/ky-019)
+- 1x [Pololu irsl16a Infrared Sensor](https://www.pololu.com/product/4067)
+- 1m [revoART 12V COB LED-Strip](https://www.leds24.com/12v-cob-led-streifen-neutralweiss-alle-1-cm-teilbar-3mm-breit-)
+- 1x [KY-019 Relay](https://sensorkit.joy-it.net/en/sensors/ky-019)
 - 5x [Emax ES09MD Servo](https://www.premium-modellbau.de/emax-es09md-digital-metallgetriebe-mini-servo-15g-0-08s-2-6kg-kugellager-es08md)
-- [Diymore 35KG Servo](https://www.amazon.de/-/en/diymore-Waterproof-Helicopter-Aeroplane-Suitable/dp/B0BD3XKQSW)
-- 4x 12V DC Geared Motor (We don't know the model, our mentor got these in 2017 from a soccer league team, picture is in the [poster](documents/documentation/Poster.pdf))
-- [L298N Motor Driver](https://projecthub.arduino.cc/lakshyajhalani56/l298n-motor-driver-arduino-motors-motor-driver-l298n-7e1b3b) (Can be controlled by the 3.3V of an RPI btw)
-- [Conrad 7.4V 3800mAh LiPo](https://www.conrad.com/en/p/conrad-energy-scale-model-battery-pack-lipo-7-4-v-3800-mah-no-of-cells-2-20-c-softcase-xt60-1344142.html)
-- [Conrad 11.1V 3800mAh LiPo](https://www.conrad.de/de/p/conrad-energy-modellbau-akkupack-lipo-11-1-v-3800-mah-zellen-zahl-3-20-c-softcase-xt60-1344139.html)
-- [XL4015 Step Down Converter](https://www.amazon.de/-/en/XL4015DC-Converter-DC5V-32V-Charging-Constant/dp/B0CC96CN3Q)
-- [XL6009 Step Up Converter](https://www.amazon.de/-/en/A0040X5-5-Items/dp/B00HV59922)
-- [XL4016E1 Step Down Converter](https://www.az-delivery.de/en/products/xl4016e-yh11060d)
-- [Arducam B0268 Wide Angle Camera](https://www.arducam.com/product/arducam-16mp-wide-angle-usb-camera-for-laptop-1-2-8-cmos-imx298-mini-uvc-b0268/)
-- [Raspberry Pi Camera Module 3 Wide](https://www.berrybase.de/en/raspberry-pi-camera-module-3-wide-12mp)
+- 1x [Diymore 35KG Servo](https://www.amazon.de/-/en/diymore-Waterproof-Helicopter-Aeroplane-Suitable/dp/B0BD3XKQSW)
+- 4x 12V DC Geared Motor (we don't know the model, our mentor got a recomendation for these in 2017 from a soccer league team, picture is in the [Poster](documents/documentation/Poster.pdf))
+- 4x Neoprene Wheels made of neoprene discs and aluminum mounting hubs (we don't know where to buy them anymore because our robotics club bought them a long time ago)
+- 1x [L298N Motor Driver](https://projecthub.arduino.cc/lakshyajhalani56/l298n-motor-driver-arduino-motors-motor-driver-l298n-7e1b3b) (controllable from the 3.3V pins of a Raspberry Pi)
+- 1x [Conrad 7.4V 3800mAh LiPo](https://www.conrad.com/en/p/conrad-energy-scale-model-battery-pack-lipo-7-4-v-3800-mah-no-of-cells-2-20-c-softcase-xt60-1344142.html)
+- 1x [Conrad 11.1V 3800mAh LiPo](https://www.conrad.de/de/p/conrad-energy-modellbau-akkupack-lipo-11-1-v-3800-mah-zellen-zahl-3-20-c-softcase-xt60-1344139.html)
+- 1x [XL4015 Step Down Converter](https://www.amazon.de/-/en/XL4015DC-Converter-DC5V-32V-Charging-Constant/dp/B0CC96CN3Q)
+- 2x [XL6009 Step Up Converter](https://www.amazon.de/-/en/A0040X5-5-Items/dp/B00HV59922)
+- 1x [XL4016E1 Step Down Converter](https://www.az-delivery.de/en/products/xl4016e-yh11060d)
+- 1x [Arducam B0268 Wide Angle Camera](https://www.arducam.com/product/arducam-16mp-wide-angle-usb-camera-for-laptop-1-2-8-cmos-imx298-mini-uvc-b0268/)
+- 1x [Raspberry Pi Camera Module 3 Wide](https://www.berrybase.de/en/raspberry-pi-camera-module-3-wide-12mp)
 
 ## Software
 
 ### Main Program
 <p align="justify">
-  Our <a href="/robot_v.3/Python/main">main program</a> is written in Python using primarily <a href="https://opencv.org/">OpenCV</a> and <a href="https://numpy.org/doc/1.26/index.html">NumPy</a> for image processing while following the black line. Different parts of the program like the communication with one of the Arduino Nanos for archiving sensor measurements via USB serial, are split into different files to use <a href="https://docs.python.org/3/library/multiprocessing.html">Python's multiprocessing</a> to execute them simultaneously and to fully use the available resources.
+  Our <a href="/robot_v.3/Python/main">main program</a> is written in Python using primarily <a href="https://opencv.org/">OpenCV</a> and <a href="https://numpy.org/doc/1.26/index.html">NumPy</a> for image processing while following the black line. Different parts of the program like the communication with one of the Arduino Nanos for archiving sensor measurements via USB serial, are split into different files to use <a href="https://docs.python.org/3/library/multiprocessing.html">Python's multiprocessing</a> to execute them simultaneously and to fully use the available resources. Some parts of the image processing are additionally accelerated by the just-in-time compiler <a href="https://numba.pydata.org/">Numba</a>. For more information about our image processing, see our <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">TDP</a>, or <a href="documents/documentation/Poster.pdf">Poster</a>.
 </p>
 
 ### GUI
@@ -95,17 +104,33 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
   <img src="https://github.com/user-attachments/assets/8f858af3-c65e-4aff-91cc-c88a3b129bd2" style="width:70%;"/>
 </div>
 
+### AI
+
+<p align="justify">
+  We have chosen to switch to an AI model for the following tasks because we believe it is the most efficient way to solve them. Previous image processing methods had many flaws (such as OpenCV's <a href="https://docs.opencv.org/4.10.0/d4/d70/tutorial_hough_circle.html">Hough Circle Transform</a>), and we believe that AI models can solve these tasks with less effort and better reliability.
+</p>
+
+#### Victim Detection
+<p align="justify">
+  The victim detection inside the evacuation zone relies on a self-trained <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> model. The model was trained on a dataset of 3145 images (available <a href="https://universe.roboflow.com/overengineering-rswji/evacuation-zone">here</a>) using <a href="https://colab.research.google.com/">Google Colab</a>. Together with a wide angle camera and a <a href="https://coral.ai/products/accelerator">Coral USB Accelerator</a>, the model can detect the victims with a high accuracy as well as high FPS. Combining everything, we can reliably complete the evacuation zone in under two minutes or in 52.36 seconds when optimized for speed ;) (see the video <a href="https://youtu.be/VQkRPGvYs4w">here</a>).
+</p>
+
+#### Evacuation Zone Entrance Detection
+<p align="justify">
+  Just like the victim detection, the detection of the silver reflective strip at the entrance of the evacuation zone is done through a <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> AI model, but instead using the <a href="https://docs.ultralytics.com/tasks/classify/">classification</a> task. After collecting 10998 images for the dataset (available <a href="https://universe.roboflow.com/overengineering-rswji/silver-strip">here</a>) and training the model using <a href="https://colab.research.google.com/">Google Colab</a>, the model can detect the silver strip with an extremely high accuracy and has so far never failed us. The model is exported using the <a href="https://docs.ultralytics.com/modes/export/">Ultralytics export mode</a> to an <a href="https://docs.ultralytics.com/integrations/onnx/">ONNX</a> model for increased performance and runs on the CPU of our Raspberry Pi 5.
+</p>
+
+<br/>
 <br/>
 <br/>
 
-### Capabilities
 <p align="center">
-  Our robot's capabilities are best showcased in a "perfect run" (with no human interventions or errors) at the 2024 World Championship in Eindhoven.
+  Our robot's capabilities are probably best demonstrated in a "perfect run" (without human intervention or error) at the 2024 World Championship in Eindhoven.
   
   <br/>
   
   <sub>
-    (See the video below.) 
+    (See the video below) 
   </sub>
 </p>
 
@@ -117,37 +142,21 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 
 <br/>
 
-## AI
-
-<p align="justify">
-  We chose to switch to an AI model for the below tasks because we believe that it is the most efficient way to solve them. Existing image processing methods have many flaws (such as OpenCV's <a href="https://docs.opencv.org/4.10.0/d4/d70/tutorial_hough_circle.html">Hough Circle Transform</a>), and we think that AI models can solve these tasks more efficiently.
-</p>
-
-### Victim Detection
-<p align="justify">
-  The victim detection inside the evacuation zone relies on a self-trained <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> model. The model was trained on a dataset of 3145 images (available <a href="https://universe.roboflow.com/overengineering-rswji/evacuation-zone">here</a>) using <a href="https://colab.research.google.com/">Google Colab</a>. Together with a wide angle camera and a <a href="https://coral.ai/products/accelerator">Coral USB Accelerator</a>, the model can detect the victims with a high accuracy and high FPS. Combining everything, we can reliably complete the evacuation zone in under two minutes or in 52.36 seconds when optimized for speed (see the video <a href="https://youtu.be/VQkRPGvYs4w">here</a>).
-</p>
-
-### Evacuation Zone Entrance Detection
-<p align="justify">
-  Just like the victim detection, the detection for the silver strip located at the entrance of the evacuation zone is done through a <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> AI model, but instead using the <a href="https://docs.ultralytics.com/tasks/classify/">classification</a> task. After collecting 10998 images for the dataset (available <a href="https://universe.roboflow.com/overengineering-rswji/silver-strip">here</a>) and training the model using <a href="https://colab.research.google.com/">Google Colab</a>, the model can detect the silver strip with an extremely high accuracy and has so far never failed us. The model is exported using the <a href="https://docs.ultralytics.com/modes/export/">Ultralytics export mode</a> to an <a href="https://docs.ultralytics.com/integrations/onnx/">ONNX</a> model for increased performance and runs on the CPU of our Raspberry Pi 5.
-</p>
-
 ## Why open source?
 
 <p align="justify">
-  We chose to open source our code because we think our code can be a great learning resource for teams wanting to try out camera-based robots or current teams who are looking for resources about camera robots. Furthermore, we think it's important to share knowledge, and we encourage you to do the same! Either by uploading videos of your scoring runs on YouTube, open-sourcing your code or as simple as chatting with other teams at competitions.
+  We decided to open source our code because we think our code can be a great learning resource for teams wanting to try out camera-based robots or current teams who are looking for resources about camera robots. We also think it's important to share knowledge, and we encourage you to do the same! Either by uploading videos of your scoring runs to YouTube, open-sourcing your code, or as simple as chatting with other teams at competitions.
 </p>
 
 
 # About the team
 <p align="justify">
-  The team originally was founded in 2017 through two former members and began with a Lego Mindstorms NXT robot. The current team (Tim & Marius) switched to a camera-based robot in around March 2022, when Tim joined the robotics club. We iterated on the design until now (2024) and get a first Place result (Individual Team) at the world championship 2024 in Eindhoven. Our progress can be seen in the many YouTube videos we uploaded over the years. More information about the team can be found in the poster and TDP (documentation).
+  The team originally was founded in 2017 through two former members and began with a Lego Mindstorms NXT robot. The current team (Tim & Marius) switched to a camera-based robot in around March 2022, when Tim joined the robotics club. Besides preparing for our graduation (Abitur) this year, we also iterated on the robot's design until now (2024) and managed to win first place (Individual Team) at the 2024 World Championship in Eindhoven. Our progress can be seen in the many <a href="https://www.youtube.com/@overengineering2">YouTube</a> videos we uploaded over the years. More information about the team can also be found in the <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">TDP</a>, or the <a href="documents/documentation/Poster.pdf">Poster</a>.
 </p>
 
-<p align="justify">
+<p align="justify"><b>
 We will not participate in any RoboCup Junior competitions in the future, as we will both be university students in 2025.
-</p>
+</b></p>
 
 ## Achievements
 
