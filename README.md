@@ -58,7 +58,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 <br/>
 
 <p align="justify">
-  As required by the competition <a href="https://junior.robocup.org/wp-content/uploads/2024/04/RCJRescueLine2024-final-1.pdf">rules</a>, in addition to this GitHub, we created detailed documentation in the form of an <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">Team Description Paper</a>, and a <a href="documents/documentation/Poster.pdf">Poster</a> (all three of which earned us the highest possible score at the 2024 World Championship in Eindhoven).
+  As required by the competition <a href="https://junior.robocup.org/wp-content/uploads/2024/04/RCJRescueLine2024-final-1.pdf">rules</a>, in addition to this GitHub, we created a detailed documentation of the robot and our development process in the form of an <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, a <a href="documents/documentation/Team Description Paper.pdf">Team Description Paper</a>, and a <a href="documents/documentation/Poster.pdf">Poster</a> (all three of which earned us the highest possible score at the 2024 World Championship in Eindhoven).
 </p>
 
 ## Components
