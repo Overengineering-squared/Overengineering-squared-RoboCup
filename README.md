@@ -1,6 +1,9 @@
 <img src="https://github.com/user-attachments/assets/d29a00c3-4102-41a2-afe6-8e1174fef7b9" style="width:100%;"/>
 
-<p align="center">
+<br/>
+<br/>
+
+<div align="center">
   <a href="https://github.com/Tim4022">
     <img src="https://img.shields.io/badge/Contributor-Tim4022-blue" alt="Tim4022">
   </a>
@@ -12,7 +15,7 @@
   <a href="https://www.youtube.com/@Overengineering2">
     <img src="https://img.shields.io/badge/YouTube-Overengineering2-red?logo=youtube" alt="Overengineering2 YouTube Channel">
   </a>
-</p>
+</div>
 
 <br/>
 <br/>
@@ -27,9 +30,9 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
   "The land is too dangerous for humans to reach the victims. Your team has been given a challenging task. The robot must be able to carry out a rescue mission in a fully autonomous mode with no human assistance. The robot must be durable and intelligent enough to navigate treacherous terrain with hills, uneven land, and rubble without getting stuck. When the robot reaches the victims, it has to gently and carefully transport each one to the safe evacuation point where humans can take over the rescue. The robot should exit the evacuation zone after a successful rescue to continue its mission throughout the disaster scene until it leaves the site. Time and technical skills are essential!"
 </i></p>
 
-<p align="center">
+<div align="center">
   <img src="https://github.com/user-attachments/assets/a0c5800d-fcd0-47f1-990c-3d6951691d1c" style="width:70%;"/>
-</p>
+</div>
 
 <p align="center"><sub><sup>
   [source: https://junior.robocup.org/wp-content/uploads/2024/04/RCJRescueLine2024-final-1.pdf]
