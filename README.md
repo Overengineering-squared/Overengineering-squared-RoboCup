@@ -52,7 +52,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 </p>
 
 <p align="center">
-  With this latest iteration of the robot design, we achieved first place (Individual Team) at the RoboCup Junior World Championship 2024 in Eindhoven.
+  With this latest iteration of the robot design, we achieved first place (Individual Team) at the RoboCup Junior World Championship 2024 in Eindhoven. (See the results <a href="documents/scores/Rescue_Line_Overall_Score_World_Championship_Eindhoven.pdf">here</a>.)
 </p>
 
 <br/>
@@ -92,7 +92,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 
 ### Main Program
 <p align="justify">
-  Our <a href="/robot_v.3/Python/main">main program</a> is written in Python using primarily <a href="https://opencv.org/">OpenCV</a> and <a href="https://numpy.org/doc/1.26/index.html">NumPy</a> for image processing while following the black line. Different parts of the program like the communication with one of the Arduino Nanos for archiving sensor measurements via USB serial, are split into different files to use <a href="https://docs.python.org/3/library/multiprocessing.html">Python's multiprocessing</a> to execute them simultaneously and to fully use the available resources. Some parts of the image processing are additionally accelerated by the just-in-time compiler <a href="https://numba.pydata.org/">Numba</a>. For more information about our image processing, see our <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">TDP</a>, or <a href="documents/documentation/Poster.pdf">Poster</a>.
+  Our <a href="/robot_v.3/Python/main">main program</a> is written in Python using primarily <a href="https://opencv.org/">OpenCV</a> and <a href="https://numpy.org/doc/1.26/index.html">NumPy</a> for the image processing while following the black line. Different parts of the program like the communication with one of the Arduino Nanos for archiving sensor measurements via USB serial, are split into different files to use <a href="https://docs.python.org/3/library/multiprocessing.html">Python's multiprocessing</a> to execute them simultaneously and to fully use the available resources. Some parts of the image processing are additionally accelerated by the just-in-time compiler <a href="https://numba.pydata.org/">Numba</a>. For more information about our image processing, see our <a href="documents/documentation/Engineering Journal.pdf">Engineering Journal</a>, <a href="documents/documentation/Team Description Paper.pdf">TDP</a>, or <a href="documents/documentation/Poster.pdf">Poster</a>.
 </p>
 
 ### GUI
@@ -112,7 +112,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 
 #### Victim Detection
 <p align="justify">
-  The victim detection inside the evacuation zone relies on a self-trained <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> model. The model was trained on a dataset of 3145 images (available <a href="https://universe.roboflow.com/overengineering-rswji/evacuation-zone">here</a>) using <a href="https://colab.research.google.com/">Google Colab</a>. Together with a wide angle camera and a <a href="https://coral.ai/products/accelerator">Coral USB Accelerator</a>, the model can detect the victims with a high accuracy as well as high FPS. Combining everything, we can reliably complete the evacuation zone in under two minutes or in 52.36 seconds when optimized for speed ;) (see the video <a href="https://youtu.be/VQkRPGvYs4w">here</a>).
+  The victim detection inside the evacuation zone relies on a self-trained <a href="https://docs.ultralytics.com/models/yolov8/">YoloV8</a> model. The model was trained on a dataset of 3145 images (available <a href="https://universe.roboflow.com/overengineering-rswji/evacuation-zone">here</a>) using <a href="https://colab.research.google.com/">Google Colab</a>. Together with a wide angle camera and a <a href="https://coral.ai/products/accelerator">Coral USB Accelerator</a>, the model can detect the victims with a high accuracy as well as high FPS. Combining everything, we can reliably complete the evacuation zone in under two minutes or in 52.36 seconds when optimized for speed ;). (See the video <a href="https://youtu.be/VQkRPGvYs4w">here</a>.)
 </p>
 
 #### Evacuation Zone Entrance Detection
@@ -130,7 +130,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
   <br/>
   
   <sub>
-    (See the video below) 
+    (See the video below.) 
   </sub>
 </p>
 
