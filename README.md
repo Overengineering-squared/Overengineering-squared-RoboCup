@@ -179,8 +179,7 @@ We will not participate in any RoboCup Junior competitions in the future, as we 
 
 # License
 This project is licensed under the GNU GPLv3 License - see the [LICENSE](LICENSE) file for details. \
-Additionally, you can read up one the license [here](https://choosealicense.com/licenses/gpl-3.0/). \
-Projects that use this code must also be open source and use the same license.
+Additionally, you can read up one the license [here](https://choosealicense.com/licenses/gpl-3.0/).
 
 ##
 
