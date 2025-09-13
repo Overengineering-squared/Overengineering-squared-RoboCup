@@ -90,6 +90,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 - 1x [XL4016E1 Step Down Converter](https://www.az-delivery.de/en/products/xl4016e-yh11060d)
 - 1x [Arducam B0268 Wide Angle Camera](https://www.arducam.com/product/arducam-16mp-wide-angle-usb-camera-for-laptop-1-2-8-cmos-imx298-mini-uvc-b0268/)
 - 1x [Raspberry Pi Camera Module 3 Wide](https://www.berrybase.de/en/raspberry-pi-camera-module-3-wide-12mp)
+- 1x [7,0" IPS Touch-Display](https://www.berrybase.de/universal-7-0-ips-display-mit-hdmi-vga-eingang-und-kapazitivem-touchscreen)
 
 ## Software
 
