@@ -150,6 +150,7 @@ the <a href="https://junior.robocup.org/">RoboCup Junior</a> sub-league <a href=
 
 <p align="justify">
   We decided to open source our code because we think our code can be a great learning resource for teams wanting to try out camera-based robots or current teams who are looking for resources about camera robots. We also think it's important to share knowledge, and we encourage you to do the same! Either by uploading videos of your scoring runs to YouTube, open-sourcing your code, or as simple as chatting with other teams at competitions.
+  We will not publish or share the CAD models of the robot.
 </p>
 
 
